@@ -1,11 +1,13 @@
 import React, {useState} from 'react'
 import { StyleSheet, View, Text, FlatList, Button } from 'react-native'
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ route, navigation }) {
 
+  const [toDoList, setTodoList] = useState([{title: 'Task1'}]);
 
+  const deleteTask = () => {
 
-  const [toDoList, setTodoList] = useState([]);
+  }
 
 
 
@@ -18,7 +20,10 @@ export default function HomeScreen({ navigation }) {
 <Button onPress={() => navigation.navigate('AddTask', {list: toDoList})} title='Add'></Button>
       <FlatList
       renderItem={(todo, index) => {
-        <Text>{todo.title}</Text>
+        <View>
+          <Text>Task title: {todo.title}</Text>
+          <Button title='Delete' onPress={() => deleteTask}></Button>
+        </View>
       }}
         data={toDoList}
       />
