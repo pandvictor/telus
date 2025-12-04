@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import React from "react";
+import { StyleSheet, View, FlatList, ActivityIndicator, Alert } from "react-native";
 import { Text } from "../components/atoms/Text";
 import { Button } from "../components/atoms/Button";
-import { useDeleteTodoMutation } from "../services/todoApi";
+import { useDeleteTodoMutation, useGetTodosQuery } from "../services/todoApi";
 
-export default function HomeScreen({ route, navigation }) {
+export default function HomeScreen({ navigation }) {
   const {
     data: toDoList = [],
     isLoading,
@@ -21,13 +21,12 @@ export default function HomeScreen({ route, navigation }) {
       Alert.alert("Error", "No se pudo eliminar la tarea. Intenta nuevamente.");
     }
   };
-  const renderItem = (item) => {
-    <View>
-      <Text>{item.title}</Text>
-      <Button title='delete' onPress={() => deleteTask(item.id)}></Button>
-    </View>;
-  };
-  console.log("toDoList", toDoList);
+  const renderItem = ({ item }) => (
+    <View style={styles.listItem}>
+      <Text style={styles.taskTitle}>{item.title}</Text>
+      <Button label='Delete' onPress={() => deleteTask(item.id)} />
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -35,13 +34,26 @@ export default function HomeScreen({ route, navigation }) {
 
       <Button
         onPress={() => navigation.navigate("AddTask", { list: toDoList })}
-        title='Add'></Button>
+        label='Add'
+      />
+      {isLoading && (
+        <View style={styles.loading}>
+          <ActivityIndicator size='small' />
+        </View>
+      )}
+      {isError && (
+        <Text style={styles.errorText}>
+          Ocurrió un error al cargar las tareas. Intenta nuevamente.
+        </Text>
+      )}
       <FlatList
         data={toDoList}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id?.toString()}
         renderItem={renderItem}
-        ListEmptyComponent={<Text>No tasks</Text>}
-        contentContainerStyle={toDoList.length ? null : styles.emptyText}
+        ListEmptyComponent={<Text style={styles.emptyText}>No tasks</Text>}
+        contentContainerStyle={toDoList.length ? null : styles.emptyList}
+        onRefresh={refetch}
+        refreshing={isFetching}
       />
     </View>
   );
@@ -70,6 +82,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     marginRight: 12,
+  },
+  loading: {
+    marginVertical: 12,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 12,
   },
   emptyList: {
     flexGrow: 1,
