@@ -1,17 +1,16 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, TextInput, Button } from 'react-native'
+import React, { useState } from "react";
+import { View, StyleSheet, TextInput } from "react-native";
+import { Button } from "../components/atoms/Button";
 
 export default function AddTaskScreen({ route, navigation }) {
+  const { list } = route.params;
 
-  const {list} = route.params;
-
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
 
   const createTast = () => {
     list.push(title);
-    navigation.navigate('Home', {list: list});
-  }
-
+    navigation.navigate("Home", { list: list });
+  };
 
   return (
     <View style={styles.container}>
@@ -19,12 +18,12 @@ export default function AddTaskScreen({ route, navigation }) {
       <TextInput value={title} onChangeText={setTitle} />
       <Button onPress={() => createTast()} title='Save'></Button>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16
+    padding: 16,
   },
-})
+});
